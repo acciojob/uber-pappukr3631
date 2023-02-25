@@ -61,15 +61,17 @@ public class CustomerServiceImpl implements CustomerService {
 		Driver driver = new Driver();
 		for(Integer driverId : driverIds)
 		{
-			driver = driverRepository2.findById(driverId).get();
-			if(driver.getCab().getAvailable()){
-				availableDriverId = true;
-				break;
+			if(driverRepository2.findById(driverId).isPresent()) {
+				driver = driverRepository2.findById(driverId).get();
+				if (driver.getCab().getAvailable()) {
+					availableDriverId = true;
+					break;
+				}
 			}
 		}
 		if(!availableDriverId)
 		{
-			throw new Exception("No cab available!");
+			throw new Exception("No value present");
 		}
 		//Driver is available so,(Driver Found)
 		//3. Get the cab
