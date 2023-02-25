@@ -3,7 +3,6 @@ package com.driver.services.impl;
 import com.driver.model.*;
 import com.driver.repository.CabRepository;
 import com.driver.services.CustomerService;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
 		for(Integer driverId : driverIds)
 		{
 			driver = driverRepository2.findById(driverId).get();
-			if(driver.getCab().isAvailable()){
+			if(driver.getCab().getAvailable()){
 				availableDriverId = true;
 				break;
 			}
@@ -80,7 +79,7 @@ public class CustomerServiceImpl implements CustomerService {
 		//Set the trip
 		TripBooking tripBooking = new TripBooking();
 		//Set attributes then save
-		tripBooking.setTripStatus(TripStatus.CONFIRMED);
+		tripBooking.setStatus(TripStatus.CONFIRMED);
 		tripBooking.setFromLocation(fromLocation);
 		tripBooking.setToLocation(toLocation);
 		tripBooking.setDistanceInKm(distanceInKm);
@@ -108,8 +107,8 @@ public class CustomerServiceImpl implements CustomerService {
 	public void cancelTrip(Integer tripId){
 		//Cancel the trip having given trip Id and update TripBooking attributes accordingly
 		TripBooking tripBooking = tripBookingRepository2.findById(tripId).get();
-		if(tripBooking.getTripStatus() == TripStatus.CONFIRMED) {
-			tripBooking.setTripStatus(TripStatus.CANCELED);
+		if(tripBooking.getStatus() == TripStatus.CONFIRMED) {
+			tripBooking.setStatus(TripStatus.CANCELED);
 			tripBooking.getDriver().getCab().setAvailable(true);
 		}
 		tripBookingRepository2.save(tripBooking);
@@ -120,8 +119,8 @@ public class CustomerServiceImpl implements CustomerService {
 		//Complete the trip having given trip Id and update TripBooking attributes accordingly
 		//Get trip object
 		TripBooking tripBooking = tripBookingRepository2.findById(tripId).get();
-		if(tripBooking.getTripStatus() == TripStatus.CONFIRMED) {
-			tripBooking.setTripStatus(TripStatus.COMPLETED);
+		if(tripBooking.getStatus() == TripStatus.CONFIRMED) {
+			tripBooking.setStatus(TripStatus.COMPLETED);
 			tripBooking.getDriver().getCab().setAvailable(true);
 		}
 		tripBookingRepository2.save(tripBooking);
