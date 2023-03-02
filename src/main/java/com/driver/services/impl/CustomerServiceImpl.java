@@ -54,26 +54,21 @@ public class CustomerServiceImpl implements CustomerService {
 		//2. Get the available driver
 		List<Driver> drivers = driverRepository2.findAll();
 		Driver driver = null;
-		int minId = drivers.get(0).getDriverId();
 		for(Driver d : drivers) {
-			if(d.getCab().getAvailable() && d.getDriverId() <= minId) {
+			if(driver == null || d.getCab().getAvailable() && d.getDriverId() < driver.getDriverId()) {
 				driver = d;
 			}
 		}
 
 		if(driver == null)
 		{
-//			throw new Exception("No cab available!");
-			throw new Exception("No value present");
+			throw new Exception("No cab available!");
+//			throw new Exception("No value present");
 		}
-		//Driver is available so,(Driver Found)
-		//3. Get the cab
-		//Update Cab's attribute
-//		Cab cab = driver.getCab();
-//		cab.setAvailable(false);
-		driver.getCab().setAvailable(Boolean.FALSE);
+		//Driver is available
+		driver.getCab().setAvailable(false);
 
-		//Set the trip
+
 		TripBooking tripBooking = new TripBooking();
 		//Set attributes then save
 		tripBooking.setFromLocation(fromLocation);
@@ -85,17 +80,12 @@ public class CustomerServiceImpl implements CustomerService {
 		tripBooking.setDriver(driver);
 
 		//Add trip in customer's tripBookingList
-//		List<TripBooking> customerTrips = customer.getTripBookingList();
 		customer.getTripBookingList().add(tripBooking);
 		customerRepository2.save(customer);
-//		customer.setTripBookingList(customerTrips);
-		//Add trip in driver's tripBookingList(Not Required)
-//		List<TripBooking> driverTrips = driver.getTripBookingList();
+
 		driver.getTripBookingList().add(tripBooking);
-//		driver.setTripBookingList(driverTrips);
-		//Saving
 		driverRepository2.save(driver);
-		//TripBooking will be saved twice!! by  cascading effect
+		//TripBooking will be saved by  cascading effect
 
 		return tripBooking;
 	}
