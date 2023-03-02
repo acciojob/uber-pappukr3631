@@ -37,14 +37,18 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public void deleteCustomer(Integer customerId) {
 		// Delete customer without using deleteById function
-//		customerRepository2.deleteCustomer(customerId);
-		customerRepository2.deleteById(customerId);
+		Customer customer = customerRepository2.findById(customerId).get();
+		customerRepository2.delete(customer);
 	}
 
 	@Override
 	public TripBooking bookTrip(int customerId, String fromLocation, String toLocation, int distanceInKm) throws Exception{
 		//Book the driver with lowest driverId who is free (cab available variable is Boolean.TRUE). If no driver is available, throw "No cab available!" exception
 		//Avoid using SQL query
+
+//		if(!customerRepository2.findById(customerId).isPresent()) {
+//			return new TripBooking();
+//		}
 		//Get The Customer
 		Customer customer = customerRepository2.findById(customerId).get();
 		//1. Get the available driver
@@ -71,13 +75,14 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 		if(!availableDriverId)
 		{
-			throw new Exception("No value present");
+			throw new Exception("No cab available!");
 		}
 		//Driver is available so,(Driver Found)
 		//3. Get the cab
 		//Update Cab's attribute
-		Cab cab = driver.getCab();
-		cab.setAvailable(false);
+//		Cab cab = driver.getCab();
+//		cab.setAvailable(false);
+		driver.getCab().setAvailable(false);
 		//Set the trip
 		TripBooking tripBooking = new TripBooking();
 		//Set attributes then save
@@ -87,18 +92,18 @@ public class CustomerServiceImpl implements CustomerService {
 		tripBooking.setDistanceInKm(distanceInKm);
 		tripBooking.setCustomer(customerRepository2.findById(customerId).get());
 		tripBooking.setDriver(driver);
-		tripBooking.setBill(cab.getPerKmRate()*distanceInKm);
+		tripBooking.setBill(driver.getCab().getPerKmRate()*distanceInKm);
 
 		//Add trip in customer's tripBookingList
-		List<TripBooking> customerTrips = customer.getTripBookingList();
-		customerTrips.add(tripBooking);
-		customer.setTripBookingList(customerTrips);
+//		List<TripBooking> customerTrips = customer.getTripBookingList();
+		customer.getTripBookingList().add(tripBooking);
+		customerRepository2.save(customer);
+//		customer.setTripBookingList(customerTrips);
 		//Add trip in driver's tripBookingList(Not Required)
 //		List<TripBooking> driverTrips = driver.getTripBookingList();
-//		driverTrips.add(tripBooking);
+		driver.getTripBookingList().add(tripBooking);
 //		driver.setTripBookingList(driverTrips);
 		//Saving
-//		customerRepository2.save(customerRepository2.findById(customerId).get());
 		driverRepository2.save(driver);
 		//TripBooking will be saved twice!! by  cascading effect
 
