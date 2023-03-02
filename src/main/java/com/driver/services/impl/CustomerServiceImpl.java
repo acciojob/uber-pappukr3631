@@ -54,7 +54,6 @@ public class CustomerServiceImpl implements CustomerService {
 		//2. Get the available driver
 		List<Driver> drivers = driverRepository2.findAll();
 		Driver driver = null;
-		//Searching for available driver with lowest driverId
 		int minId = drivers.get(0).getDriverId();
 		for(Driver d : drivers) {
 			if(d.getCab().getAvailable() && d.getDriverId() <= minId) {
@@ -64,7 +63,8 @@ public class CustomerServiceImpl implements CustomerService {
 
 		if(driver == null)
 		{
-			throw new Exception("No cab available!");
+//			throw new Exception("No cab available!");
+			throw new Exception("No value present");
 		}
 		//Driver is available so,(Driver Found)
 		//3. Get the cab
