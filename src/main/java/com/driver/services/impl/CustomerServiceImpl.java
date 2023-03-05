@@ -49,17 +49,15 @@ public class CustomerServiceImpl implements CustomerService {
 //		if(!customerRepository2.findById(customerId).isPresent()) {
 //			return new TripBooking();
 //		}
-		//1. Get The Customer
-		Customer customer = customerRepository2.findById(customerId).get();
-		//2. Get the available driver
+
+		//1. Get the available driver
 		List<Driver> drivers = driverRepository2.findAll();
 		Driver driver = null;
-		if(drivers.size() != 0) {
-			for (Driver d : drivers) {
-				if (d.getCab().getAvailable()) {
-					if (driver == null || d.getDriverId() < driver.getDriverId()) {
-						driver = d;
-					}
+
+		for(Driver currentDriver : drivers) {
+			if(currentDriver.getCab().getAvailable()) {
+				if (driver == null || currentDriver.getDriverId() < driver.getDriverId()) {
+					driver = currentDriver;
 				}
 			}
 		}
@@ -67,14 +65,17 @@ public class CustomerServiceImpl implements CustomerService {
 		if(driver == null)
 		{
 			throw new Exception("No cab available!");
-//			throw new Exception("No value present");
 		}
 		//Driver is available
 		driver.getCab().setAvailable(false);
 
 
 		TripBooking tripBooking = new TripBooking();
+
+		//2. Get The Customer
+		Customer customer = customerRepository2.findById(customerId).get();
 		//Set attributes then save
+
 		tripBooking.setFromLocation(fromLocation);
 		tripBooking.setToLocation(toLocation);
 		tripBooking.setStatus(TripStatus.CONFIRMED);
