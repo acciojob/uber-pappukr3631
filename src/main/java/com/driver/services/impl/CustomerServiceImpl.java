@@ -73,7 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
 		TripBooking tripBooking = new TripBooking();
 
 		//2. Get The Customer
-		Customer customer = customerRepository2.findById(customerId).get();
+		Customer customer = customerRepository2.findById(customerId).get();//getting customer before getting driver caused failed test cases(when no cab is available)
 		//Set attributes then save
 
 		tripBooking.setFromLocation(fromLocation);
